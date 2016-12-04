@@ -81,7 +81,7 @@
 					this.x2 = ev.touches[1].pageX;
 					this.y2 = ev.touches[1].pageY;
 
-					this.pinchStartLen = getLen(this.x2 - this.x1, this.y2 - this.y1);
+					this.pinchStartLen = this._getLen(this.x2 - this.x1, this.y2 - this.y1);
 
 					console.log('multipointStart event');
 
