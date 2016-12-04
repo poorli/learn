@@ -60,8 +60,8 @@
 
 				this.delta = this.now - (this.last ? this.last : this.now);
 
-				this.x1 = ev.changedTouches[0].pageX;
-				this.y1 = ev.changedTouches[0].pageY;
+				this.x1 = ev.touches[0].pageX;
+				this.y1 = ev.touches[0].pageY;
 
 				if (this.preTapPosition.x !== null) {
 					this.isDoubleTap = (this.delta > 0 && this.delta < 250 && Math.abs(this.x1 - this.preTapPosition.x) < 30 && Math.abs(this.y1 < this.preTapPosition.y) < 30);
