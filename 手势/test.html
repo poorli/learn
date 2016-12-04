@@ -99,13 +99,15 @@
 				}
 				console.log('touch move');
 				// console.log(ev)
-				var touches  = ev.changedTouches;
+				// var touches  = ev.changedTouches;
 
-				var len = touches.length;
+				// var len = touches.length;
 
-				for(var i = 0; i < len; i ++) {
+				this.touchLen = ev.touches.length;
+
+				// for(var i = 0; i < len; i ++) {
 					// console.log(touches[i].pageX, touches[i].pageY)
-				}
+				// }
 
 				clearTimeout(this.longTap);
 
@@ -118,8 +120,8 @@
 
 					if (this.pinchStartLen > 0) {
 						ev.scale = this._getLen(this.x2 - this.x1, this.y2 - this.y1) / this.pinchStartLen;
-
-						document.write('pich event', 'the scale is', ev.scale);
+						console.log('pinch event')
+						document.write('pich event' + 'the scale is' + ev.scale);
 					}
 				}
 
