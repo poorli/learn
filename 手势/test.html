@@ -94,6 +94,9 @@
 			},
 
 			handleMove: function (ev) {
+				if (!ev.touches) {
+					return;
+				}
 				console.log('touch move');
 				// console.log(ev)
 				var touches  = ev.changedTouches;
@@ -114,7 +117,7 @@
 					this.y2 = ev.touches[1].pageY;
 
 					if (this.pinchStartLen > 0) {
-						ev.scale = getLen(this.x2 - this.x1, this.y2 - this.x1) / this.pinchStartLen;
+						ev.scale = this._getLen(this.x2 - this.x1, this.y2 - this.y1) / this.pinchStartLen;
 
 						document.write('pich event', 'the scale is', ev.scale);
 					}
