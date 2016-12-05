@@ -97,6 +97,8 @@
 				if (!ev.touches) {
 					return;
 				}
+
+				ev.preventDefault();
 				console.log('touch move');
 				// console.log(ev)
 				// var touches  = ev.changedTouches;
@@ -135,6 +137,7 @@
 				// console.log(ev);
 				var self = this;
 				// console.log(this)
+				e.preventDefault();
 
 				clearTimeout(this.longTap);
 
