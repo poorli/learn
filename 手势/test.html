@@ -8,9 +8,17 @@
 	<div id="touch" style="background: yellow; width: 800px; height: 800px;">
 		
 	</div>
-
+	
+	<div id="display"></div>
 	<script type="text/javascript">
 		var ele = document.querySelector('#touch');
+		var display = document.querySelector('#display');
+
+		function displayStatus (ele, status) {
+			var newEle = document.createElement('p');
+			newEle.textContent = status;
+			ele.appendChild(newEle);
+		}
 
 		var SimpleTouch = function (el, option) {
 			this.ele = typeof el == 'string' ? document.querySelector(el) : el;
@@ -30,19 +38,24 @@
 			 	y: null
 			 }
 
-			this.preTapPosition = {
+			 this.preTapPosition = {
 			 	x: null,
 			 	y: null
-			}
+			 }
 
-			this.isDoubleTap = false;
-			this.x1 = this.x2 = this.y1 = this.y2 = null;
+			 this.isDoubleTap = false;
+			 this.x1 = this.x2 = this.y1 = this.y2 = null;
 
-			this.pinchStartLen = null;
+			 this.pinchStartLen = null;
 
-			this.scale = 1;
+			 this.scale = 1;
 
-			this.touchLen = null;
+			 this.touchLen = null;
+
+			 this.preV = {
+			 	x: null,
+			 	y: null
+			 }
 
 			// this.
 		}
@@ -52,13 +65,15 @@
 				console.log('touch start ');
 				// console.log(ev)
 				
-				ev.preventDefault();
+				// ev.preventDefault();
 				this.curTapPosition.x = ev.changedTouches[0].pageX;
 				this.curTapPosition.y = ev.changedTouches[0].pageY;
 
 				this.now = Date.now();
 
 				this.delta = this.now - (this.last ? this.last : this.now);
+
+				
 
 				this.x1 = ev.touches[0].pageX;
 				this.y1 = ev.touches[0].pageY;
@@ -81,6 +96,11 @@
 					this.x2 = ev.touches[1].pageX;
 					this.y2 = ev.touches[1].pageY;
 
+					this.preV = {
+						x: this.x2 - this.x1,
+						y: this.y2 - this.y1
+					}
+
 					this.pinchStartLen = this._getLen(this.x2 - this.x1, this.y2 - this.y1);
 
 					console.log('multipointStart event');
@@ -90,6 +110,7 @@
 
 				this.longTap = setTimeout(function () {
 					console.log('long tap');
+					displayStatus(display, 'long tap');
 				}, 750);
 			},
 
@@ -97,20 +118,11 @@
 				if (!ev.touches) {
 					return;
 				}
-
-				ev.preventDefault();
+				// ev.preventDefault();
 				console.log('touch move');
-				// console.log(ev)
-				// var touches  = ev.changedTouches;
-
-				// var len = touches.length;
 
 				this.touchLen = ev.touches.length;
-
-				// for(var i = 0; i < len; i ++) {
-					// console.log(touches[i].pageX, touches[i].pageY)
-				// }
-
+				//取消长按
 				clearTimeout(this.longTap);
 
 				this.x1 = ev.touches[0].pageX;
@@ -120,14 +132,33 @@
 					this.x2 = ev.touches[1].pageX;
 					this.y2 = ev.touches[1].pageY;
 
+					var curV = {
+						x: this.x2 - this.x1,
+						y: this.y2 - this.y1
+					}
+
 					if (this.pinchStartLen > 0) {
+
+
 						ev.scale = this._getLen(this.x2 - this.x1, this.y2 - this.y1) / this.pinchStartLen;
 						console.log('pinch event')
-						document.write('pich event' + 'the scale is' + ev.scale);
-					}
-				}
 
-				if (this.touchLen) {
+						ev.angle = this._getRotateAngle(curV, preV);
+
+						console.log('rotate event')
+						displayStatus(display, 'rotate event,' + 'the angle is:' + ev.angle);
+
+						this.preV = {
+							x: this.x2 - this.x1,
+							y: this.y2 - this.y1
+						}
+
+
+						// document.
+					} else {
+						
+					}
+				} else {
 					
 				}
 			},
@@ -137,12 +168,12 @@
 				// console.log(ev);
 				var self = this;
 				// console.log(this)
-				e.preventDefault();
+				// e.preventDefault();
 
 				clearTimeout(this.longTap);
 
 				var curX = ev.changedTouches[0].pageX,
-					curY = ev.changedTouches[0].pageY;
+				curY = ev.changedTouches[0].pageY;
 				
 				if(Math.abs(curX - this.preTapPosition.x) > 30 || Math.abs(curY - this.preTapPosition.y) > 30) {
 					console.log(this._swipeDirection(this.preTapPosition.x, this.preTapPosition.y, curX, curY));
@@ -189,7 +220,7 @@
 				return v1.x * v1.y + v2.x * v2.y;
 			},
 
-			_cross: function (v1, v2) {
+			_getRotateAngle: function (v1, v2) {
 				var angle = this._getAngle(v1, v2);
 				if (this._cross(v1, v2) > 0) {
 					angle *= -1;
