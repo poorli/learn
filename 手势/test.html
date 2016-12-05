@@ -176,6 +176,26 @@
 
 			_getLen: function(x, y) {
 				return Math.sqrt(x * x + y * y);
+			},
+
+			_getAngle: function (v1, v2) {
+				var len1 = this._getLen(v1.x, v1.y);
+				var len2 = this._getLen(v2.x, v2.y);
+				var r = this._dot(v1, v2) / (len1 * len2);
+				return Math.acos(r);
+			},
+
+			_dot: function (v1, v2) {
+				return v1.x * v1.y + v2.x * v2.y;
+			},
+
+			_cross: function (v1, v2) {
+				var angle = this._getAngle(v1, v2);
+				if (this._cross(v1, v2) > 0) {
+					angle *= -1;
+				}
+
+				return angle * 180 / Math.PI;
 			}
 		};	
 

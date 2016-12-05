@@ -84,7 +84,7 @@
         // 触发 touchStart 时间，初始化变量。
         start: function (evt) {
             if (!evt.touches) return;
-            e.preventDefault();
+            // e.preventDefault();
             this.now = Date.now();
             this.x1 = evt.touches[0].pageX;
             this.y1 = evt.touches[0].pageY;
@@ -111,6 +111,9 @@
 
             // 长按 750ms 
             this.longTapTimeout = setTimeout(function () {
+                window.addEventListener('touchstart', function (evt) {
+                    evt.preventDefault();
+                }, false);
                 this.longTap(evt);
                 console.log('longTap')
             }.bind(this), 750);
