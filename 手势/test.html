@@ -3,13 +3,62 @@
 <head>
 	<meta charset="UTF-8">
 	<title>手势</title>
+	<style type="text/css">
+		html,
+		body,
+		div,
+		img,
+		p,
+		a,
+		span,
+		i,
+		strong,
+		ul,
+		li,
+		input,
+		h2,
+		h3,
+		h4 {
+			margin: 0;
+			padding: 0; 
+		}
+		img {
+			width: 100%; 
+		}
+
+
+		.fl {
+			display: inline;
+			float: left; 
+		}
+
+		.fr {
+			display: inline;
+			float: right; 
+		}
+
+		input {
+			outline: none; 
+		}
+
+		li {
+			list-style: none; 
+		}
+
+		a {
+			text-decoration: none; 
+		}
+		em {
+			font-style: normal;
+		}
+	</style>
 </head>
 <body>
-	<div id="touch" style="background: #ccc; width: 800px; height: 800px;">
-		
+	<div id="touch" style="background: #eee;line-height: 800px;text-align: center;font-size: 20px;font-weight: 400;">
+		测试区域
 	</div>
 	
-	<div id="display"></div>
+	<div id="display" style="font-size: 16px;font-weight: 200;margin-top: 40px;padding-left: 10px;"></div>
 	<script type="text/javascript">
 		var ele = document.querySelector('#touch');
 		var display = document.querySelector('#display');
@@ -129,13 +178,13 @@
 						ev.scale = this._getLen(this.x2 - this.x1, this.y2 - this.y1) / this.pinchStartLen;
 						console.log('pinch event')
 
-						displayStatus(display, 'pinch event, the scale is ' + ev.scale);
+						displayStatus(display, 'pinch event, the scale is ' + ev.scale.toFixed(2));
 						ev.angle = this._getRotateAngle(curV, this.preV);
 
 						console.log('rotate event')
 
-						displayStatus(display, 'rotate event')
-						displayStatus(display, 'rotate event,' + 'the angle is:' + ev.angle);
+						// displayStatus(display, 'rotate event')
+						displayStatus(display, 'rotate event,' + 'the angle is:' + ev.angle.toFixed(2));
 
 						this.preV = {
 							x: this.x2 - this.x1,
@@ -144,14 +193,14 @@
 					}
 				} else {
 					if (this.preX !== null) {
-						ev.detalX = this.x1 - this.preX;
-						ev.detalY = this.y1 - this.preY;
+						ev.deltaX = this.x1 - this.preX;
+						ev.deltaY = this.y1 - this.preY;
 					} else {
 						ev.deltaX = 0;
 						ev.deltaY = 0;
 					}
 					console.log('press move');
-					displayStatus(display, 'press move, the deltaX, deltaY is ' + ev.detalX + ',' + ev.detalX);
+					displayStatus(display, 'press move, the deltaX, deltaY is ' + ev.deltaX.toFixed(2) + ',' + ev.deltaY.toFixed(2));
 				}
 
 				displayStatus(display, 'touch move');
@@ -164,24 +213,30 @@
 
 			handleEnd: function (ev) {
 				if (!ev.changedTouches) {return}
-					console.log('handle end');
+				console.log('handle end');
+				displayStatus(display, 'handle end');
 				this._cancelLongTap();
 				var self = this;
 				var curX = ev.changedTouches[0].pageX,
 				curY = ev.changedTouches[0].pageY;
 				
 				if(Math.abs(curX - this.preTapPosition.x) > 30 || Math.abs(curY - this.preTapPosition.y) > 30) {
-					console.log(this._swipeDirection(this.preTapPosition.x, this.preTapPosition.y, curX, curY));
+					var swipeDirection = this._swipeDirection(this.preTapPosition.x, this.preTapPosition.y, curX, curY);
+					console.log(swipeDirection);
+					displayStatus(display, swipeDirection);
 				} else {
 					this.tapTimeout = setTimeout(function () {
 						console.log('tap')
+						displayStatus(display, 'tap');
 						// 注意，这里需要用self， this 指向的是 window 对象
 						if (self.isDoubleTap) {
 							console.log('double tap');
+							displayStatus(display, 'double tap');
 							clearTimeout(self.touchTimeout);
 						} else {
 							self.touchTimeout = setTimeout(function () {
 								console.log('simple tap')
+								displayStatus(display, 'simple tap');
 							}, 250)
 						}
 					}, 0)
