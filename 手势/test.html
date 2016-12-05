@@ -62,6 +62,7 @@
 
 		SimpleTouch.prototype = {
 			handleStart: function (ev) {
+				display.innerHTML = '';
 				console.log('touch start ');
 				displayStatus(display, 'touch start');
 				this.curTapPosition.x = ev.changedTouches[0].pageX;
@@ -145,9 +146,13 @@
 
 						displayStatus(display, 'pinch event, the scale is ' + ev.scale);
 
+
+
 						ev.angle = this._getRotateAngle(curV, preV);
 
 						console.log('rotate event')
+
+						displayStatus(display, 'rotate event')
 						displayStatus(display, 'rotate event,' + 'the angle is:' + ev.angle);
 
 						this.preV = {
@@ -194,9 +199,6 @@
 					}, 0)
 				}
 
-				setTimeout(function () {
-					display.innerHTML = '';
-				}, 1000)
 			},
 
 			handleCancel: function (ev) {
