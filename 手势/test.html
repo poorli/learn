@@ -63,9 +63,7 @@
 		SimpleTouch.prototype = {
 			handleStart: function (ev) {
 				console.log('touch start ');
-				// console.log(ev)
-				
-				// ev.preventDefault();
+				displayStatus(display, 'touch start');
 				this.curTapPosition.x = ev.changedTouches[0].pageX;
 				this.curTapPosition.y = ev.changedTouches[0].pageY;
 
@@ -80,7 +78,6 @@
 
 				if (this.preTapPosition.x !== null) {
 					this.isDoubleTap = (this.delta > 0 && this.delta < 250 && Math.abs(this.x1 - this.preTapPosition.x) < 30 && Math.abs(this.y1 < this.preTapPosition.y) < 30);
-					// log(isDoubleTap)
 					console.log(this.isDoubleTap)
 				}
 
@@ -91,7 +88,6 @@
 				this.touchLen = ev.touches.length;
 
 				if (this.touchLen > 1) {
-					// this.
 					this._cancelLongTap();
 					this.x2 = ev.touches[1].pageX;
 					this.y2 = ev.touches[1].pageY;
@@ -104,6 +100,8 @@
 					this.pinchStartLen = this._getLen(this.x2 - this.x1, this.y2 - this.y1);
 
 					console.log('multipointStart event');
+
+					displayStatus(display, 'multipointStart event')
 
 
 				}
@@ -120,6 +118,8 @@
 				}
 				// ev.preventDefault();
 				console.log('touch move');
+
+				displayStatus(display, 'touch move');
 
 				this.touchLen = ev.touches.length;
 				//取消长按
@@ -142,6 +142,8 @@
 
 						ev.scale = this._getLen(this.x2 - this.x1, this.y2 - this.y1) / this.pinchStartLen;
 						console.log('pinch event')
+
+						displayStatus(display, 'pinch event, the scale is ' + ev.scale);
 
 						ev.angle = this._getRotateAngle(curV, preV);
 
@@ -191,6 +193,10 @@
 						}
 					}, 0)
 				}
+
+				setTimeout(function () {
+					display.innerHTML = '';
+				}, 1000)
 			},
 
 			handleCancel: function (ev) {
