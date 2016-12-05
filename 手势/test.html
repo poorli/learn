@@ -5,7 +5,7 @@
 	<title>手势</title>
 </head>
 <body>
-	<div id="touch" style="background: yellow; width: 800px; height: 800px;">
+	<div id="touch" style="background: #ccc; width: 800px; height: 800px;">
 		
 	</div>
 	
@@ -27,37 +27,36 @@
 			this.ele.addEventListener('touchmove', this.handleMove.bind(this), false);
 			this.ele.addEventListener('touchcancel', this.handleCancel.bind(this), false);
 
-			 this.longTap = null; // 750ms
-			 this.touchTimeout = null; // 250ms
-			 this.tapTimeout = null; // 
-			 this.now = null;
-			 this.last = null;
-			 this.delta = null;
-			 this.curTapPosition = {
-			 	x: null,
-			 	y: null
-			 }
+			this.longTapTimeout = null; // 750ms
+			this.touchTimeout = null; // 250ms
+			this.tapTimeout = null; // 
+			this.now = null;
+			this.last = null;
+			this.delta = null;
+			this.preTapPosition = {
+				x: null,
+				y: null
+			}
 
-			 this.preTapPosition = {
-			 	x: null,
-			 	y: null
-			 }
+			this.isDoubleTap = false;
+			this.x1 = this.x2 = this.y1 = this.y2 = null;
 
-			 this.isDoubleTap = false;
-			 this.x1 = this.x2 = this.y1 = this.y2 = null;
+			//用于 pressMove 移动距离计算
+			this.preX = null;
+			this.preY = null;
 
-			 this.pinchStartLen = null;
+			this.pinchStartLen = null;
 
-			 this.scale = 1;
+			this.scale = 1;
 
-			 this.touchLen = null;
+			this.touchLen = null;
 
-			 this.preV = {
-			 	x: null,
-			 	y: null
-			 }
+			// 用于 pinch 和 rotate 的计算
+			this.preV = {
+				x: null,
+				y: null
+			}
 
-			// this.
 		}
 
 		SimpleTouch.prototype = {
@@ -65,14 +64,12 @@
 				display.innerHTML = '';
 				console.log('touch start ');
 				displayStatus(display, 'touch start');
-				this.curTapPosition.x = ev.changedTouches[0].pageX;
-				this.curTapPosition.y = ev.changedTouches[0].pageY;
 
 				this.now = Date.now();
 
 				this.delta = this.now - (this.last ? this.last : this.now);
 
-				
+
 
 				this.x1 = ev.touches[0].pageX;
 				this.y1 = ev.touches[0].pageY;
@@ -99,33 +96,21 @@
 					}
 
 					this.pinchStartLen = this._getLen(this.x2 - this.x1, this.y2 - this.y1);
-
 					console.log('multipointStart event');
-
 					displayStatus(display, 'multipointStart event')
-
-
 				}
 
-				this.longTap = setTimeout(function () {
+				this.longTapTimeout = setTimeout(function () {
 					console.log('long tap');
 					displayStatus(display, 'long tap');
-				}, 750);
+				}.bind(this), 750);
 			},
 
 			handleMove: function (ev) {
 				if (!ev.touches) {
 					return;
 				}
-				// ev.preventDefault();
-				console.log('touch move');
-
-				displayStatus(display, 'touch move');
-
 				this.touchLen = ev.touches.length;
-				//取消长按
-				clearTimeout(this.longTap);
-
 				this.x1 = ev.touches[0].pageX;
 				this.y1 = ev.touches[0].pageY;
 
@@ -145,9 +130,6 @@
 						console.log('pinch event')
 
 						displayStatus(display, 'pinch event, the scale is ' + ev.scale);
-
-
-
 						ev.angle = this._getRotateAngle(curV, this.preV);
 
 						console.log('rotate event')
@@ -159,26 +141,32 @@
 							x: this.x2 - this.x1,
 							y: this.y2 - this.y1
 						}
-
-
-						// document.
-					} else {
-						
 					}
 				} else {
-					
+					if (this.preX !== null) {
+						ev.detalX = this.x1 - this.preX;
+						ev.detalY = this.y1 - this.preY;
+					} else {
+						ev.deltaX = 0;
+						ev.deltaY = 0;
+					}
+					console.log('press move');
+					displayStatus(display, 'press move, the deltaX, deltaY is ' + ev.detalX + ',' + ev.detalX);
 				}
+
+				displayStatus(display, 'touch move');
+				this._cancelLongTap();
+
+				this.preX = this.x1;
+				this.preY = this.y1;
+
 			},
 
 			handleEnd: function (ev) {
-				console.log('handle end');
-				// console.log(ev);
+				if (!ev.changedTouches) {return}
+					console.log('handle end');
+				this._cancelLongTap();
 				var self = this;
-				// console.log(this)
-				// e.preventDefault();
-
-				clearTimeout(this.longTap);
-
 				var curX = ev.changedTouches[0].pageX,
 				curY = ev.changedTouches[0].pageY;
 				
@@ -198,15 +186,22 @@
 						}
 					}, 0)
 				}
+				this.scale = 1;
+				this.pinchStartLen = 1;
+				this.x1 = this.x2 = this.y1 = this.y2 = this.preX = this.preY = null;
+				this.preTapPosition.x = null;
 
 			},
 
 			handleCancel: function (ev) {
-				console.log('handle cancel')
+				console.log('handle cancel');
+				clearTimeout(this.touchTimeout);
+				clearTimeout(this.tapTimeout);
+				clearTimeout(this.longTapTimeout);
 			},
 
 			_cancelLongTap: function () {
-				clearTimeout(this.longTap)
+				clearTimeout(this.longTapTimeout)
 			},
 
 			_swipeDirection: function (x1, y1, x2, y2) {

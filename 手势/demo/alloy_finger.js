@@ -111,9 +111,9 @@
 
             // 长按 750ms 
             this.longTapTimeout = setTimeout(function () {
-                window.addEventListener('touchstart', function (evt) {
-                    evt.preventDefault();
-                }, false);
+                // window.addEventListener('touchstart', function (evt) {
+                //     evt.preventDefault();
+                // }, false);
                 this.longTap(evt);
                 console.log('longTap')
             }.bind(this), 750);
@@ -157,6 +157,8 @@
             this._cancelLongTap();
             this.x2 = currentX;
             this.y2 = currentY;
+
+            //????
             if (evt.touches.length > 1) {
                 this._cancelLongTap();
                 evt.preventDefault();
