@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Vue.js 分享</title>
+	<style type="text/css">
+		body {
+			/*text-align: center;*/
+			background-color: #f5f5f5;
+		}
+
+		ul {
+			padding: 0;
+			margin:0;
+		}
+
+		.status {
+			list-style: none;
+			padding: 10px 0 0;
+			text-align: justify;
+		}
+		.status li {
+			display: inline-block;
+			margin: 0 5px;
+			cursor: pointer;
+		}
+		li.hiddle {
+			display: none;
+		}
+
+		h1 {
+			text-align: center;
+		}
+		.todoapp {
+			width: 600px;
+			margin: 0 auto;
+			background-color: #fff;
+			padding: 20px;
+		}
+		
+		input {
+			height: 40px;
+		}
+		.add-list {
+			display: inline-block;
+			width: 100%;
+			
+			font-size: 25px;
+			border-style: none;
+			border-bottom: 1px solid #ccc;
+		}
+
+		.todo-list {
+			padding: 10px 5px;
+			border-bottom: 1px solid #ccc;
+		}
+
+		.todo-list input {
+			width: 400px;
+			font-size: 20px;
+			border-style: none;
+			margin-left: 15px;
+			margin-right: 10px;
+		}
+
+		input[type='checkbox'] {
+			display: inline-block;
+			width: 20px;
+			height: 20px;
+			vertical-align:text-bottom; margin-bottom:2px; margin-bottom:-2px\9;
+		}
+
+		.todo-list button {
+
+		}
+
+		.selected {
+			border: 1px solid #ccc;
+			padding: 4px;
+		}
+	</style>
+</head>
+<body>
+	<div id="app">
+		<h1>todos</h1>
+		<main class="todoapp">
+			<div>
+				<input type="text" name="add a todo" v-model.trim="newTodo" placeholder="what needs to be done" @keyup.enter="addTodo" class="add-list">
+			</div>
+
+			<div v-for="(todo, index) in filteredTodoList" class="todo-list">
+				<input type="checkbox" name="状态" v-model="todo.completed" :class="{completed: todo.completed}">
+				<!-- <inp>{{ todo.title }}</inp>	 -->
+				<!-- <label @dbclick="editTodo">{{ todo.title }}</label> -->
+				<input type="text" name="编辑" v-model="todo.title">
+				<button @click="removeTodo(index)">删除</button>
+			</div >
+
+			<ul class="status" v-show="todoList.length">
+				<li>{{ todoLength }} items left</li>
+				<li v-for="(status, index) in statusList" @click="changeStatus(status)" :class="{selected: visibility == status}">{{ status }}</li>
+				<li @click="removeCompled" :class="{hiddle: hasCompletedTodo}">clear completed</li>
+				<li @click="completeAll">completed all</li>
+			</ul>
+		</main>
+
+	</div>
+
+	<script src="https://unpkg.com/vue/dist/vue.js"></script>
+	<script src="js/app.js"></script>
+	<script type="text/javascript">
+
+	</script>
+</body>
+</html>
