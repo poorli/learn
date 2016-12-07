@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>简单双向绑定的实现</title>
+</head>
+<body>
+	<div id="app">
+		<input type="text" v-model="message">
+		{{ message }}
+	</div>
+
+	<script type="text/javascript">
+
+		function Dep () {
+			this.subs = []; 
+		}
+
+		Dep.prototype = {
+			addSub: function (sub) {
+				this.subs.push(sub);
+			},
+			notify: function () {
+				this.subs.forEach( function(sub) {
+					sub.update();
+				});
+			}
+		}
+
+		function Watcher (name, node, vm) {
+			Dep.target = this;
+			console.log(this)
+			this.name = name;
+			this.node = node;
+			this.vm = vm;
+			this.update();
+			Dep.target = null;
+		}
+
+		Watcher.prototype = {
+			update: function () {
+				this.get();
+				this.node.nodeValue = this.value;
+				if (this.node.value) {
+					this.node.value = this.value;
+				}
+			},
+			get: function () {
+				console.log(this.vm)
+				this.value = this.vm.data[this.name];
+			}
+		}
+
+		function nodeToFragment (node, vm) {
+			var flag = document.createDocumentFragment();
+			var child;
+			while (child = node.firstChild) {
+				complie(child,vm);
+				flag.append(child);
+			}
+			return flag;
+		}
+
+		function complie (node, vm) {
+			if(node.nodeType === 1) {
+				var attrs = node.attributes;
+				for (var i = 0; i < attrs.length; i++) {
+					if (attrs[i].nodeName == 'v-model') {
+						var name  = attrs[i].nodeValue;
+						node.value = vm.data[name];
+						new Watcher(name, node, vm);
+						node.addEventListener('input', function (e) {
+							vm.data[name] = e.target.value;
+						}, false)
+						
+					}
+				}
+			}
+
+			if (node.nodeType === 3) {
+				var reg = /\{\{(.*)\}\}/;
+				if (reg.test(node.nodeValue)) {
+					var name = RegExp.$1;
+					name = name.trim();
+					// node.nodeValue = vm.data[name];
+					new Watcher(name, node, vm);
+				}
+			}
+		}
+
+
+
+		function defineReactive (obj, key, val) {
+			var dep = new Dep();	
+			Object.defineProperty(obj, key, {
+				get: function () {
+					if (Dep.target) {
+						dep.addSub(Dep.target);
+					}
+					return val;
+				},
+				set: function (newValue) {
+					if (val === newValue) {
+						return;
+					}
+					val = newValue;
+					console.log(val);
+
+					dep.notify();
+				}
+			})
+		}
+
+		function observe (obj, vm) {
+			Object.keys(obj).forEach(function (key) {
+				defineReactive(obj, key, obj[key]);
+			});
+		}
+
+		function Vue (options) {
+			this.data = options.data;
+			this.ele = document.querySelector(options.el);
+
+			observe(this.data, this);
+
+			this.ele.appendChild(nodeToFragment(this.ele, this));
+		}
+
+		var vm = new Vue({
+			el: '#app',
+			data: {
+				message: 'hello world'
+			}
+		})
+	</script>
+</body>
+</html>
