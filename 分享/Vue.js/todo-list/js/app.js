@@ -27,8 +27,12 @@ var TodoListStorage = {
 		localStorage.setItem('list', JSON.stringify(todoList));		
 	}
 }
+
+//创建实例
 var app = new Vue({
+	//绑定元素
 	el: '#app',
+	//数据
 	data: {
 		message: 'hello Vue.js',
 		todoList: [],
@@ -36,7 +40,7 @@ var app = new Vue({
 		visibility: 'all',
 		statusList: ['all', 'active', 'completed']
 	},
-
+	// 生命周期
 	created: function () {
 		if (TodoListStorage.get()) {
 			// console.log('test');
@@ -45,12 +49,7 @@ var app = new Vue({
 		}
 	},
 
-	// created: {
-		// if (TodoListStorage.get()) {
-			// console.log('test');
-		// }
-	// },
-
+	//计算属性
 	computed: {
 		filteredTodoList: function () {
 			// console.log(filters[this.visibility](this.todoList))
@@ -64,6 +63,7 @@ var app = new Vue({
 		}
 	},
 
+	// watch
 	watch: {
 		todoList: {
 			handler: function (val, oldVal) {
@@ -75,7 +75,7 @@ var app = new Vue({
 			
 		}
 	},
-
+	// 定义方法
 	methods: {
 
 		addTodo: function () {

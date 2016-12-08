@@ -85,20 +85,23 @@
 		<h1>todos</h1>
 		<main class="todoapp">
 			<div>
+				<!-- 事件绑定 -->
 				<input type="text" name="add a todo" v-model.trim="newTodo" placeholder="what needs to be done" @keyup.enter="addTodo" class="add-list">
 			</div>
-
+			<!-- 列表渲染 -->
 			<div v-for="(todo, index) in filteredTodoList" class="todo-list">
+				<!-- 表单处理 -->
 				<input type="checkbox" name="状态" v-model="todo.completed" :class="{completed: todo.completed}">
-				<!-- <inp>{{ todo.title }}</inp>	 -->
-				<!-- <label @dbclick="editTodo">{{ todo.title }}</label> -->
 				<input type="text" name="编辑" v-model="todo.title">
 				<button @click="removeTodo(index)">删除</button>
 			</div >
-
+			<!-- 条件渲染 -->
 			<ul class="status" v-show="todoList.length">
 				<li>{{ todoLength }} items left</li>
-				<li v-for="(status, index) in statusList" @click="changeStatus(status)" :class="{selected: visibility == status}">{{ status }}</li>
+				<!-- 属性绑定 -->
+				<li v-for="(status, index) in statusList" @click="changeStatus(status)" :class="{selected: visibility == status}">
+					{{ status }} <!-- 插值 -->
+				</li>
 				<li @click="removeCompled" :class="{hiddle: hasCompletedTodo}">clear completed</li>
 				<li @click="completeAll">completed all</li>
 			</ul>
